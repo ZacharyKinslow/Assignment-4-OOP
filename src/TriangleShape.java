@@ -3,12 +3,19 @@ import java.awt.*;
 public class TriangleShape extends Shape {
 
     public TriangleShape(double x, double y, double dx, double dy, int size, Color color) {
-        super(x, y, dx, dy, size, color);
+        super(color, x, y, dx, dy, size);
     }
     @Override
-    public void draw(Graphics2D g) {
+    public void draw(Graphics2D g2d) {
+
+        // Stop rotation from affecting other shapes
+        Graphics2D g = (Graphics2D) g2d.create();
+
+
         g.setColor(color);
         int s = size;
+        //Rotate Only This Triangle
+        g.rotate(Math.toRadians(rotation), x + s / 2.0, y + s / 2.0);
 
         int[] xs = {(int)x, (int)(x + s / 2.0), (int)(x + s)};
         int[] ys = {(int)(y + s), (int)(y),  (int)(y + s)};

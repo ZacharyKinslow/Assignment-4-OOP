@@ -6,6 +6,10 @@ public abstract class Shape {
     protected double dx, dy;
     protected int size;
     protected int state;
+    protected double rotation = 0;
+    protected double rotationSpeed = 2; // degrees per frame\
+    protected int colorShift = 0;
+
     public Shape(Color color, double x, double y, double dx, double dy, int size) {
         this.color = color;
         this.x = x;
@@ -26,6 +30,9 @@ public abstract class Shape {
     public void move(int panelWidth, int panelHeight) {
         x += dx;
         y += dy;
+        rotation += rotationSpeed;
+        colorShift = (colorShift + 5) % 360;
+        color = Color.getHSBColor(colorShift / 360f, 1f, 1f);
 
         Rectangle bounds = getBounds();
 
@@ -53,19 +60,23 @@ public abstract class Shape {
 
     //Change shape visuals on collision
     public void onShapeCollision() {
-        //Switch direction
         dx = -dx;
         dy = -dy;
 
-        //Cycle visual state
         state = (state + 1) % 3;
 
-        //Change color based on state
-        switch (state) {
-            case 0: color = Color.MAGENTA;
-            case 1: color = Color.GREEN;
-            case 2: color = Color.RED;
-        }
+        // pick two random colors for a gradient theme
+        Color c1 = Color.getHSBColor((float)Math.random(), 1f, 1f);
+        Color c2 = Color.getHSBColor((float)Math.random(), 1f, 1f);
+
+        // blend them based on state
+        float t = state / 2f; // 0 → 0.0, 1 → 0.5, 2 → 1.0
+
+        int r = (int)(c1.getRed()   * (1 - t) + c2.getRed()   * t);
+        int g = (int)(c1.getGreen() * (1 - t) + c2.getGreen() * t);
+        int b = (int)(c1.getBlue()  * (1 - t) + c2.getBlue()  * t);
+
+        color = new Color(r, g, b);
     }
 
 }
