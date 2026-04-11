@@ -9,6 +9,7 @@ public class ScreenSaverPanel extends JPanel {
     private final ArrayList<Shape> shapes = new ArrayList<>();
     private final Timer timer;
     private final Random rand  = new Random();
+    private int textColorShift = 0;
 
     public ScreenSaverPanel() {
         setBackground(Color.BLACK);
@@ -53,9 +54,30 @@ public class ScreenSaverPanel extends JPanel {
 
         shapes.add(s);
     }
+
+    //Fix collision bug when overlapping shapes spawn
+    private void resolveOverlap(Shape a, Shape b) {
+        Rectangle r1 = a.getBounds();
+        Rectangle r2 = b.getBounds();
+
+        if (r1.intersects(r2)) {
+            double overlapX = (r1.width + r2.width) / 2.0 - Math.abs(a.x - b.x);
+            double overlapY = (r1.height + r2.height) / 2.0 - Math.abs(a.y - b.y);
+
+            if (overlapX < overlapY) {
+                if (a.x < b.x) { a.x -= overlapX / 2; b.x += overlapX / 2; }
+                else           { a.x += overlapX / 2; b.x -= overlapX / 2; }
+            } else {
+                if (a.y < b.y) { a.y -= overlapY / 2; b.y += overlapY / 2; }
+                else           { a.y += overlapY / 2; b.y -= overlapY / 2; }
+            }
+        }
+    }
+
     private void updateShapes() {
         int w =  getWidth();
         int h = getHeight();
+        textColorShift = (textColorShift + 1) % 360;
 
         //Move shapes and handle wall collisions
         for (Shape s : shapes) {
@@ -68,6 +90,7 @@ public class ScreenSaverPanel extends JPanel {
                 Shape a = shapes.get(i);
                 Shape b = shapes.get(j);
                 if (a.collidesWith(b)) {
+                    resolveOverlap(a, b);
                     a.onShapeCollision();
                     b.onShapeCollision();
                 }
@@ -80,12 +103,33 @@ public class ScreenSaverPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
 
-        //Antialiasing
+        // Antialiasing
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        // 🌈 Rainbow text color
+        Color textColor = Color.getHSBColor(textColorShift / 360f, 1f, 1f);
+
+        String message = "Thanks Yousef for a great class!\n Have a great summer!";
+        Font font = new Font("Arial", Font.BOLD, 28);
+        g2.setFont(font);
+
+        FontMetrics fm = g2.getFontMetrics();
+        int x = (getWidth() - fm.stringWidth(message)) / 2;
+        int y = getHeight() / 2;
+
+        //Glow effect
+        g2.setColor(new Color(textColor.getRed(), textColor.getGreen(), textColor.getBlue(), 80));
+        g2.drawString(message, x + 2, y + 2);
+
+        // 🎯 Main text
+        g2.setColor(textColor);
+        g2.drawString(message, x, y);
+
+        // 🟣 Draw shapes on top
         for (Shape s : shapes) {
             s.draw(g2);
         }
+
         g2.dispose();
     }
 }

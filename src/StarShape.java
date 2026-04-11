@@ -6,6 +6,10 @@ public class StarShape extends Shape {
         super(color, x, y, dx, dy, size);
     }
 
+    public void onSpinChange() {
+        rotationSpeed *= 0.8;
+    }
+
     @Override
     public void draw(Graphics2D g2d) {
 
@@ -25,8 +29,8 @@ public class StarShape extends Shape {
         int[] xs = new int[points];
         int[] ys = new int[points];
 
-        double inner = s * 0.3;
-        double outer = s * 0.5;
+        double outer = s * 0.45;
+        double inner = s * 0.25;
 
         // visual state: rotate a bit
         double baseAngle = switch (state) {
@@ -51,5 +55,15 @@ public class StarShape extends Shape {
     @Override
     public Rectangle getBounds() {
         return new Rectangle((int)x, (int)y, size, size);
+    }
+
+    @Override
+    public void onShapeCollision() {
+        dx = -dx;
+        dy = -dy;
+
+        state = (state + 1) % 3;
+
+        collisionCooldown = 10;
     }
 }

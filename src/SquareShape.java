@@ -4,6 +4,7 @@ public class SquareShape extends Shape{
     public SquareShape(double x, double y, double dx, double dy, int size, Color color) {
         super(color, x, y, dx, dy, size);
     }
+
     @Override
     public void draw(Graphics2D g2d) {
         Graphics2D g = (Graphics2D) g2d.create();
@@ -32,5 +33,15 @@ public class SquareShape extends Shape{
     @Override
     public Rectangle getBounds() {
         return new Rectangle((int)x, (int)y, size, size);
+    }
+
+    @Override
+    public void onShapeCollision() {
+        dx = -dx;
+        dy = -dy;
+
+        state = (state + 1) % 3;
+
+        collisionCooldown = 10;
     }
 }

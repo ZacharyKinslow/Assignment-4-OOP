@@ -8,30 +8,52 @@ public class TriangleShape extends Shape {
     @Override
     public void draw(Graphics2D g2d) {
 
-        // Stop rotation from affecting other shapes
         Graphics2D g = (Graphics2D) g2d.create();
-
-
         g.setColor(color);
+
         int s = size;
-        //Rotate Only This Triangle
-        g.rotate(Math.toRadians(rotation), x + s / 2.0, y + s / 2.0);
 
-        int[] xs = {(int)x, (int)(x + s / 2.0), (int)(x + s)};
-        int[] ys = {(int)(y + s), (int)(y),  (int)(y + s)};
+        // Center of the triangle
+        double cx = x + s / 2.0;
+        double cy = y + s / 2.0;
 
+        // Rotate around center
+        g.rotate(Math.toRadians(rotation), cx, cy);
+
+        // Triangle points relative to center
+        int[] xs = {
+                (int)(cx - s/2),   // left
+                (int)(cx),         // top
+                (int)(cx + s/2)    // right
+        };
+
+        int[] ys = {
+                (int)(cy + s/2),   // bottom left
+                (int)(cy - s/2),   // top
+                (int)(cy + s/2)    // bottom right
+        };
+
+        // Apply skew when state == 1
         if (state == 1) {
-            //Flipped Upside down
-            ys = new int[]{(int)y, (int)(y + s), (int)y};
-        }  else if (state == 2) {
-            //Skew slightly
-            xs = new int[]{(int)x, (int)(x + s * 0.8), (int)(x + s)};
+            xs[1] = (int)(cx + s * 0.2); // shift top point slightly right
         }
+
         g.fillPolygon(xs, ys, 3);
+        g.dispose();
     }
 
     @Override
     public Rectangle getBounds() {
         return new Rectangle((int)x, (int)y, size, size);
+    }
+
+    @Override
+    public void onShapeCollision() {
+        dx = -dx;
+        dy = -dy;
+
+        state = (state + 1) % 3;
+
+        collisionCooldown = 10;
     }
 }

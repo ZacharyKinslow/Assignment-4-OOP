@@ -7,8 +7,9 @@ public abstract class Shape {
     protected int size;
     protected int state;
     protected double rotation = 0;
-    protected double rotationSpeed = 2; // degrees per frame\
+    protected double rotationSpeed = 1; // degrees per frame\
     protected int colorShift = 0;
+    protected int collisionCooldown = 0;
 
     public Shape(Color color, double x, double y, double dx, double dy, int size) {
         this.color = color;
@@ -31,7 +32,11 @@ public abstract class Shape {
         x += dx;
         y += dy;
         rotation += rotationSpeed;
-        colorShift = (colorShift + 5) % 360;
+        if (collisionCooldown > 0)
+            collisionCooldown--;
+
+
+        colorShift = (colorShift + 1) % 360;
         color = Color.getHSBColor(colorShift / 360f, 1f, 1f);
 
         Rectangle bounds = getBounds();
@@ -55,13 +60,22 @@ public abstract class Shape {
 
     //Check if shape hits another shape
     public boolean collidesWith(Shape other) {
+        if (this.collisionCooldown > 0 || other.collisionCooldown > 0)
+            return false;
+
         return this.getBounds().intersects(other.getBounds());
     }
+
+    //Collision Cooldown (Stop visual glitching)
+    protected boolean justCollided = false;
 
     //Change shape visuals on collision
     public void onShapeCollision() {
         dx = -dx;
         dy = -dy;
+
+        // reduce spin intensity on collision
+        rotationSpeed *= 0.8;
 
         state = (state + 1) % 3;
 
@@ -77,6 +91,8 @@ public abstract class Shape {
         int b = (int)(c1.getBlue()  * (1 - t) + c2.getBlue()  * t);
 
         color = new Color(r, g, b);
+
+        collisionCooldown = 10;
     }
 
 }
