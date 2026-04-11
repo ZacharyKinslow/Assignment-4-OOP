@@ -26,3 +26,4 @@ public class CircleShape extends Shape {
         collisionCooldown = 10;
     }
 }
+

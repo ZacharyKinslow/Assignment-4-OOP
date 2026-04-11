@@ -106,7 +106,7 @@ public class ScreenSaverPanel extends JPanel {
         // Antialiasing
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // 🌈 Rainbow text color
+        //Rainbow text color
         Color textColor = Color.getHSBColor(textColorShift / 360f, 1f, 1f);
 
         String message = "Thanks Yousef for a great class!\n Have a great summer!";
@@ -121,11 +121,11 @@ public class ScreenSaverPanel extends JPanel {
         g2.setColor(new Color(textColor.getRed(), textColor.getGreen(), textColor.getBlue(), 80));
         g2.drawString(message, x + 2, y + 2);
 
-        // 🎯 Main text
+        //Main text
         g2.setColor(textColor);
         g2.drawString(message, x, y);
 
-        // 🟣 Draw shapes on top
+        //Draw shapes on top
         for (Shape s : shapes) {
             s.draw(g2);
         }

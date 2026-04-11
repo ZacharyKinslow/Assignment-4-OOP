@@ -45,3 +45,4 @@ public class SquareShape extends Shape{
         collisionCooldown = 10;
     }
 }
+

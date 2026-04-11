@@ -57,3 +57,4 @@ public class TriangleShape extends Shape {
         collisionCooldown = 10;
     }
 }
+
